@@ -1,0 +1,17 @@
+{
+  "name": "bot-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "start": "nodemon bot.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "coinpaprika-js": "^0.1.8",
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
+    "telegraf": "^4.11.2"
+  }
+}

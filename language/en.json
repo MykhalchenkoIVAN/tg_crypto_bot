@@ -1,0 +1,12 @@
+{
+    "button":{
+        "coins": "Сoins 📊",
+        "search": "Search 🔍",
+        "global_data": "Global data 🌏",
+        "exchanges": "Exchanges 💰",
+        "back": "⬅️ Back"
+    },
+    "message":{
+        "select_a_language": "Select a language"
+    }
+}

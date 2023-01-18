@@ -1,0 +1,12 @@
+{
+    "button":{
+        "coins": "Monety 📊",
+        "search": "Szukaj 🔍",
+        "global_data": "Dane globalne 🌏",
+        "exchanges": "Giełdy 💰",
+        "back": "⬅️ Wróć"
+    },
+    "message":{
+        "select_a_language": "Wybierz język"
+    }
+}
