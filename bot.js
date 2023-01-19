@@ -1,12 +1,6 @@
-
 const { Telegraf, Markup } = require('telegraf');
 require('dotenv').config();
-
-
-
 const api = require('coinpaprika-js');
-
-
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 let welcome = ``;
@@ -16,12 +10,7 @@ let btnSearche = '';
 let btnExchanges = '';
 let btnGlobalData = '';
 let back = ``
-let select_a_language = `Виберіть мову`
-
-
-
-
-
+let select_a_language = ``
 
 const parceLanguage = function (lang) {
 
@@ -48,14 +37,13 @@ const displayKeyboardHome = (ctx) => {
 
     ]).resize();
     return keyboardHome;
-};
+}
+
 const displayKeyboardLanguage = (ctx) => {
     const keyboardLanguage = Markup.keyboard([
         [Markup.button.callback("Polski język 🇵🇱", "poland"), Markup.button.callback("Українська мова 🇺🇦", "ukraine")]
         , [Markup.button.callback('English 🇬🇧', 'english'), Markup.button.callback("Español 🇪🇸", "spain")]
-
     ]).resize();
-
     return keyboardLanguage;
 }
 
@@ -76,9 +64,6 @@ const displayKeyboardCoins = (ctx) => {
     return keyboardCoins;
 }
 
-
-
-
 const coinsButton = async (ctx) => {
     try {
         await ctx.reply(`${coinsPageTitle}`, displayKeyboardCoins())
@@ -87,7 +72,6 @@ const coinsButton = async (ctx) => {
         await ctx.reply('Сталась помилка')
     }
 }
-//  btnBack.resize()
 
 const formatCurrency = function (value) {
     return new Intl.NumberFormat().format(value).split(',')[0];
@@ -144,7 +128,6 @@ bot.on('callback_query', async (ctx) => {
     if (ctx.update.callback_query.data) {
         searchCoin(ctx, ctx.update.callback_query.data)
     }
-
     else if (
         ctx.message.text !== `${btnCoins}` &&
         ctx.message.text !== 'Polski język 🇵🇱' &&

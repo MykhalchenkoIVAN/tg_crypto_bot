@@ -5,7 +5,8 @@
   "main": "bot.js",
 
   "scripts": {
-    "start": "nodemon bot.js"
+    "start": "node bot.js",
+    "start_local": "nodemon bot.js"
   },
   "author": "",
   "license": "ISC",
