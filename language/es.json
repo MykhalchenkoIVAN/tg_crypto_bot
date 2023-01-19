@@ -1,12 +1,15 @@
 {
     "button":{
-        "coins": "Сoins 📊",
-        "search": "Search 🔍",
-        "global_data": "Global data 🌏",
-        "exchanges": "Exchanges 💰",
-        "back": "⬅️ Back"
+        "coins": "Soins 📊",
+        "search": "Buscar 🔍",
+        "global_data": "Datos globales 🌏",
+        "exchanges": "Intercambios 💰",
+        "back": "⬅️ Volver"
     },
     "message":{
-        "select_a_language": "Select a language"
+        "select_a_language": "Seleccione un idioma",
+        "welcome": "Me alegro de verte!!!😊 Soy un bot que sabe un montón de cosas interesantes sobre cryptocurrencies.💸Puedo mostrarte las tasas actuales, los intercambios y la información general del mercado.🏦Todavía estoy aprendiendo así que más adelante podré hacer más cosas ✌🏻",
+        "coins_title":"⬇️ Si no hay ningún botón con la moneda que busca, póngase en contacto conmigo e intentaré encontrarlo para usted. ⬇️"
+
     }
 }

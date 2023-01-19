@@ -1,11 +1,16 @@
+
 const { Telegraf, Markup } = require('telegraf');
 require('dotenv').config();
+
+
+
 const api = require('coinpaprika-js');
+
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-let welcome = `32423 `;
-
+let welcome = ``;
+let coinsPageTitle = '';
 let btnCoins = '';
 let btnSearche = '';
 let btnExchanges = '';
@@ -14,11 +19,16 @@ let back = ``
 let select_a_language = `Виберіть мову`
 
 
+
+
+
+
 const parceLanguage = function (lang) {
 
     const obj = require(`./language/${lang}.json`)
-    console.log(obj);
     select_a_language = obj.message.select_a_language;
+    welcome = obj.message.welcome;
+    coinsPageTitle = obj.message.coins_title;
     btnCoins = obj.button.coins;
     btnSearche = obj.button.search;
     btnExchanges = obj.button.exchanges;
@@ -38,8 +48,7 @@ const displayKeyboardHome = (ctx) => {
 
     ]).resize();
     return keyboardHome;
-}
-
+};
 const displayKeyboardLanguage = (ctx) => {
     const keyboardLanguage = Markup.keyboard([
         [Markup.button.callback("Polski język 🇵🇱", "poland"), Markup.button.callback("Українська мова 🇺🇦", "ukraine")]
@@ -72,7 +81,7 @@ const displayKeyboardCoins = (ctx) => {
 
 const coinsButton = async (ctx) => {
     try {
-        await ctx.reply(`ctx.message.text`, displayKeyboardCoins())
+        await ctx.reply(`${coinsPageTitle}`, displayKeyboardCoins())
 
     } catch {
         await ctx.reply('Сталась помилка')
@@ -81,7 +90,7 @@ const coinsButton = async (ctx) => {
 //  btnBack.resize()
 
 const formatCurrency = function (value) {
-    return new Intl.NumberFormat().format(value);
+    return new Intl.NumberFormat().format(value).split(',')[0];
 
 }
 
@@ -100,7 +109,7 @@ const globalInfo = async (ctx) => {
 
         const formatGlobalData = `
 Капіталізація ${formatCurrency(globalData.market_cap_usd)} USD
-Домінація BTC:  ${globalData.bitcoin_dominance_percentage}
+Домінація BTC:  ${globalData.bitcoin_dominance_percentage} %
         `
         await ctx.reply(formatGlobalData);
     } catch {
@@ -109,32 +118,49 @@ const globalInfo = async (ctx) => {
 
 }
 const searchCoin = async (ctx, ticer) => {
-    let coin;
+
     try {
-        coin = await api.search(`${ticer}`);
+        let ticerCoin = await api.search(`${ticer}`);
+        let coin = await api.ticker(`${ticerCoin.currencies[0].id}`, { quotes: "USD,BTC,ETH" });
+        console.log(typeof coin.price_usd);
         const formatData = `
-${coin.currencies[0].name}
-${coin.currencies[0].symbol}
-${coin.currencies[0].id}
-Тип: ${coin.currencies[0].type}
-        `
+        ${coin.name} ${coin.symbol}
+Price: ${formatCurrency(coin.price_usd)} $        
+Rank:  ${coin.rank}`
+
         await ctx.reply(formatData);
+
     } catch {
         await ctx.reply('Незнайдено жодної монети', displayKeyboardCoins())
     }
-
 }
 
-bot.start((ctx) => ctx.reply(`Welcome ${ctx.message.from.first_name}`, displayKeyboardLanguage()));
+bot.start((ctx) => ctx.reply(`Welcome ${ctx.message.from.first_name}`, displayKeyboardLanguage(ctx)));
 
 bot.help((ctx) => ctx.reply('Send me a sticker'));
 
 
 bot.on('callback_query', async (ctx) => {
-    searchCoin(ctx, ctx.update.callback_query.data)
+    if (ctx.update.callback_query.data) {
+        searchCoin(ctx, ctx.update.callback_query.data)
+    }
+
+    else if (
+        ctx.message.text !== `${btnCoins}` &&
+        ctx.message.text !== 'Polski język 🇵🇱' &&
+        ctx.message.text !== 'Українська мова 🇺🇦' &&
+        ctx.message.text !== 'English 🇬🇧' &&
+        ctx.message.text !== 'Español 🇪🇸' &&
+        ctx.message.text !== `BTC ₿` &&
+        ctx.message.text !== `${back}` &&
+        ctx.message.text !== `${btnGlobalData}`) {
+        console.log("dasd");
+
+    }
 })
 
 bot.on('text', async (ctx) => {
+
     if (ctx.message.text === 'Polski język 🇵🇱') {
         parceLanguage('pl');
         ctx.reply(`${welcome}`, displayKeyboardHome(ctx))
@@ -154,7 +180,7 @@ bot.on('text', async (ctx) => {
     if (ctx.message.text === `${back}`) {
         ctx.reply(`${select_a_language}`, displayKeyboardLanguage(ctx))
     }
-    if (ctx.message.text === 'Mонети 😁') {
+    if (ctx.message.text === `${btnCoins}`) {
         coinsButton(ctx);
     }
     if (ctx.message.text === `${btnExchanges}`) {
@@ -170,7 +196,7 @@ bot.on('text', async (ctx) => {
         displayKeyboardCoins();
     }
     else if (
-        ctx.message.text !== 'Mонети 😁' &&
+        ctx.message.text !== `${btnCoins}` &&
         ctx.message.text !== 'Polski język 🇵🇱' &&
         ctx.message.text !== 'Українська мова 🇺🇦' &&
         ctx.message.text !== 'English 🇬🇧' &&
@@ -179,6 +205,7 @@ bot.on('text', async (ctx) => {
         ctx.message.text !== `${back}` &&
         ctx.message.text !== `${btnGlobalData}`) {
         searchCoin(ctx, ctx.message.text)
+
     }
 
 });

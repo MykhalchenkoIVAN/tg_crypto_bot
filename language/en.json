@@ -7,6 +7,9 @@
         "back": "⬅️ Back"
     },
     "message":{
-        "select_a_language": "Select a language"
+        "select_a_language": "Select a language",
+        "welcome": "Glad to see you!!!😊 I'm a bot that knows a lot of interesting things about cryptocurrencies.💸I can show you current rates, exchanges and general market information.🏦I'm still learning so later I will be able to do more things ✌🏻",
+        "coins_title":"⬇️ If there is no button with the coin you are looking for, write me and I will try to find it for you. ⬇️"
+
     }
 }

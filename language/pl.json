@@ -7,6 +7,9 @@
         "back": "⬅️ Wróć"
     },
     "message":{
-        "select_a_language": "Wybierz język"
+        "select_a_language": "Wybierz język",
+        "welcome": "Cieszę się, że Cię widzę!!!😊 Jestem botem, który wie wiele ciekawych rzeczy o kryptowalutach.💸Mogę pokazać Ci aktualne kursy, wymiany i ogólne informacje o rynku.🏦Ciągle się uczę, więc później będę mógł robić więcej rzeczy ✌🏻",
+        "coins_title":"⬇️ Jeśli przycisk z poszukiwaną monetą nie jest dostępny, proszę o kontakt, ja postaram się ją dla Ciebie znaleźć. ⬇️"
+
     }
 }
