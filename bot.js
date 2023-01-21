@@ -6,7 +6,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 let welcome = `Glad to see you!!!😊 I'm a bot that knows a lot of interesting things about cryptocurrencies.💸I can show you current rates, exchanges and general market information.🏦I'm still learning so later I will be able to do more things ✌🏻`;
 let coinsPageTitle = '⬇️ If there is no button with the coin you are looking for, write me and I will try to find it for you. ⬇️';
 let btnCoins = 'Сoins 📊';
-let btnSearche = 'Search 🔍';
+let btnNewCoins = 'New coins ✅';
 let btnExchanges = 'Exchanges 💰';
 let btnGlobalData = 'Global data 🌏';
 let back = `⬅️ Back`
@@ -20,20 +20,18 @@ const parceLanguage = function (lang) {
     welcome = obj.message.welcome;
     coinsPageTitle = obj.message.coins_title;
     btnCoins = obj.button.coins;
-    btnSearche = obj.button.search;
+    btnNewCoins = obj.button.new_coins;
     btnExchanges = obj.button.exchanges;
     btnGlobalData = obj.button.global_data
     back = obj.button.back;
 }
 
 
-
-
 // keyboards
 const displayKeyboardHome = (ctx) => {
     const keyboardHome = Markup.keyboard([
         [Markup.button.callback(`${btnCoins}`, "coins"), Markup.button.callback("BTC ₿", "btc")]
-        , [Markup.button.callback(`${btnExchanges}`, 'markets'), Markup.button.callback(`${btnSearche}`, "search")],
+        , [Markup.button.callback(`${btnExchanges}`, 'markets'), Markup.button.callback(`${btnNewCoins}`, "search")],
         [Markup.button.callback(`${btnGlobalData}`)],
         [Markup.button.callback(`${back}`)]
 
@@ -69,7 +67,6 @@ const displayKeyboardCoins = (ctx) => {
 const coinsButton = async (ctx) => {
     try {
         await ctx.reply(`${coinsPageTitle}`, displayKeyboardCoins())
-
     } catch {
         await ctx.reply('Сталась помилка')
     }
@@ -77,14 +74,12 @@ const coinsButton = async (ctx) => {
 
 const formatCurrency = function (value) {
     return new Intl.NumberFormat().format(value).split(',')[0];
-
 }
 
 
 const globalInfo = async (ctx) => {
     try {
         const globalData = await api.global()
-
         const formatGlobalData = `
 Капіталізація ${formatCurrency(globalData.market_cap_usd)} USD
 Домінація BTC:  ${globalData.bitcoin_dominance_percentage} %
@@ -97,15 +92,12 @@ const globalInfo = async (ctx) => {
 }
 
 const searchCoin = async (ctx, ticer) => {
-    console.log('searchCoin');
     try {
         let price_usd = '*Price USD*'
         let rank = '*Rank*'
         let volume_24h_usd = '*Volume 24h usd*'
-
         let ticerCoin = await api.search(`${ticer}`);
         let coin = await api.ticker(`${ticerCoin.currencies[0].id}`, { quotes: "USD,BTC,ETH" });
-
         const formatData = `
 *${coin.name}*  *${coin.symbol}*
 
@@ -114,25 +106,40 @@ ${rank}:      ${coin.rank}
 ${volume_24h_usd}:   ${formatCurrency(coin.volume_24h_usd)}
 ${volume_24h_usd}:   ${formatCurrency(coin.market_cap_usd)}
 ${volume_24h_usd}:   ${formatCurrency(coin.circulating_supply)}`
+
         await ctx.reply(formatData, { parse_mode: 'markdown' });
 
     } catch {
         await ctx.reply('Сталась помилка', displayKeyboardCoins(ctx));
     }
 }
+// Getting a random element from an array
+const randomArrayItem = (q) => q[Math.floor(Math.random() * q.length)];
 
+// Display a random coin in the message for the user
+const displayRandomCoin = async (ctx) => {
+    try {
+        let coinsArr = await api.coins();
+        let q = coinsArr.filter(el => el.is_new === true);
+        const a = randomArrayItem(q)
+        let randomCoin = `
+       *${a.name}* *${a.symbol}*`
+        await ctx.reply(randomCoin, { parse_mode: 'markdown' })
+    } catch {
+        await ctx.reply('*Сталась помилка спробуйте ще раз*', { parse_mode: 'markdown' });
+    }
 
+}
+
+// boa start
 bot.start((ctx) => ctx.reply(`Welcome ${ctx.message.from.first_name}`, displayKeyboardLanguage(ctx)));
 
 bot.help((ctx) => ctx.reply('Send me a sticker'));
 
 
 bot.on('callback_query', async (ctx) => {
-    console.log(ctx.update.callback_query.data);
     if (ctx.update.callback_query.data === 'menu') {
-        console.log("/menu");
     }
-
     if (ctx.update.callback_query.data) {
         searchCoin(ctx, ctx.update.callback_query.data)
     }
@@ -146,12 +153,12 @@ bot.on('callback_query', async (ctx) => {
         ctx.message.text !== `BTC ₿` &&
         ctx.message.text !== `${back}` &&
         ctx.message.text !== `${btnGlobalData}` &&
+        ctx.message.text !== `${btnNewCoins}` &&
         ctx.message.text !== `${btnExchanges}`) {
     }
 })
 
 bot.on('text', async (ctx) => {
-    console.log(ctx.message.text, 'sad');
     if (ctx.message.text === '/menu') {
         ctx.reply(`menu`, displayKeyboardHome(ctx))
     }
@@ -168,7 +175,6 @@ bot.on('text', async (ctx) => {
         ctx.reply(`${welcome}`, displayKeyboardHome(ctx))
     }
     if (ctx.message.text === 'Español 🇪🇸') {
-
         parceLanguage('es');
         ctx.reply(`${welcome}`, displayKeyboardHome(ctx))
     }
@@ -179,7 +185,6 @@ bot.on('text', async (ctx) => {
         coinsButton(ctx);
     }
     if (ctx.message.text === `${btnExchanges}`) {
-        console.log(`${btnExchanges}`);
     }
     if (ctx.message.text === `BTC ₿`) {
         searchCoin(ctx, 'btc')
@@ -187,8 +192,8 @@ bot.on('text', async (ctx) => {
     if (ctx.message.text === `${btnGlobalData}`) {
         globalInfo(ctx)
     }
-    if (ctx.message.text === `${btnSearche}`) {
-        coinsButton(ctx);
+    if (ctx.message.text === `${btnNewCoins}`) {
+        displayRandomCoin(ctx)
     }
     else if (
         ctx.message.text !== '/menu' &&
@@ -201,6 +206,7 @@ bot.on('text', async (ctx) => {
         ctx.message.text !== `BTC ₿` &&
         ctx.message.text !== `${back}` &&
         ctx.message.text !== `${btnGlobalData}` &&
+        ctx.message.text !== `${btnNewCoins}` &&
         ctx.message.text !== `${btnExchanges}`) {
         searchCoin(ctx, ctx.message.text)
 
